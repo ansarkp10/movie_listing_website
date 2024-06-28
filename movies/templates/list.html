@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Movie List{% endblock %}
+
+{% block content %}
+<head>
+  <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+  <style>
+    .animated-title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      animation: fadeInDown 1s ease-in-out;
+      text-align: center;
+      color: #1abc9c;
+    }
+
+    .search-form {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .search-form input[type="text"] {
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: 2px solid #1abc9c;
+      border-radius: 5px 0 0 5px;
+      outline: none;
+      width: 400px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .search-form button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border: 2px solid #1abc9c;
+      border-left: none;
+      background-color: #1abc9c;
+      color: white;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    .search-form button:hover {
+      background-color: #16a085;
+    }
+
+    .movie-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+      animation: fadeInUp 1s ease-in-out;
+    }
+
+    .movie-table th, .movie-table td {
+      padding: 1rem;
+      border: 1px solid #ddd;
+      text-align: center; /* Center text in table cells */
+      vertical-align: middle; /* Vertically center the content */
+    }
+
+    .movie-table th {
+      background-color: #1abc9c;
+      color: white;
+    }
+
+    .movie-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .movie-table tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .movie-table img {
+      display: block;
+      margin: 0 auto;
+    }
+
+    .btn-primary {
+      background-color: #1abc9c;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    .btn-primary:hover {
+      background-color: #16a085;
+    }
+
+    .btn-edit,
+.btn-delete {
+  display: inline-block; /* Ensure they are inline-block elements */
+  background-color: #3498db; /* Edit button background color */
+  color: white; /* Text color */
+  padding: 0.5rem 1rem; /* Padding around text */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+  text-decoration: none; /* No underline */
+  transition: background-color 0.3s ease-in-out; /* Smooth background color transition */
+  margin-right: 0.5rem; /* Right margin */
+}
+
+.btn-edit:hover {
+  background-color: #2980b9; /* Darker background color on hover */
+}
+
+.btn-delete {
+  background-color: #e74c3c; /* Delete button background color */
+}
+
+.btn-delete:hover {
+  background-color: #c0392b; /* Darker background color on hover */
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .btn-edit,
+  .btn-delete {
+    display: block; /* Stack buttons vertically on small screens */
+    width: 70%; /* Full width on small screens */
+    margin-bottom: 0.5rem; /* Bottom margin between buttons */
+  }
+}
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<div class="container">
+  <h2 class="animated-title">Movie List</h2>
+
+  <form method="GET" action="{% url 'list' %}" class="search-form">
+    <input type="text" name="q" placeholder="Search Movies" value="{{ request.GET.q }}">
+    <button type="submit" class="btn-primary">Search</button>
+  </form>
+
+  <a href="{% url 'create' %}" class="btn-primary">Create Movie</a><br><br>
+  <table class="movie-table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th style="width:600px;">Summary</th>
+        <th>Year</th>
+        <th>Image</th>
+        <th>Edit/Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for movie in movies %}
+      <tr>
+        <td>{{ movie.title|upper }}</td>
+        <td>{{ movie.description|default:'no data available' }}</td>
+        <td>{{ movie.year }}</td>
+        <td>
+          {% if movie.image %}
+          <img src="{{ movie.image.url }}" alt="{{ movie.title }} Image" style="max-width: 200px; max-height: 250px;">
+          {% else %}
+          No Image Available
+          {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'edit' movie.pk %}" class="btn-edit">Edit</a>
+          <a href="{% url 'delete' movie.pk %}" class="btn-delete">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
